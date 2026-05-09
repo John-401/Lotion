@@ -1,132 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fresh Essence | Boutique de Fragancias</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
     <header class="header">
-        <div class="header__container">
-            <h1 class="header__logo">Fresh Essence</h1>
-            
-            <nav class="nav">
-                <ul class="nav__list">
-                    <li class="nav__item" onclick="app.showView('home')">Inicio</li>
-                    <li class="nav__item" onclick="app.showView('catalog')">Catálogo</li>
-                    <li class="nav__item" onclick="app.showView('about')">Nosotros</li>
-                </ul>
-            </nav>
+      <div class="header__container">
+        <h1 class="header__logo">Fresh Essence</h1>
 
-            <div class="header__auth">
-                <span id="user-greeting" class="header__greeting"></span>
-                <button id="btn-show-login" class="btn btn--primary">Iniciar Sesión</button>
-                <button id="btn-logout" class="btn btn--danger hidden">Salir</button>
-            </div>
+        <nav class="nav">
+          <ul class="nav__list">
+            <li class="nav__item" onclick="app.showView('home')">Inicio</li>
+            <li class="nav__item" onclick="app.showView('catalog')">
+              Catálogo
+            </li>
+            <li class="nav__item" onclick="app.showView('about')">Nosotros</li>
+          </ul>
+        </nav>
+
+        <div class="header__auth">
+          <span id="user-greeting" class="header__greeting"></span>
+          <button id="btn-show-login" class="btn btn--primary">
+            Iniciar Sesión
+          </button>
+          <button id="btn-logout" class="btn btn--danger hidden">Salir</button>
         </div>
+      </div>
     </header>
 
     <div id="auth-modal" class="modal hidden">
-        <div class="modal__content">
-            <span class="modal__close" id="btn-close-modal">&times;</span>
-            <h2 id="modal-title" class="modal__title">Iniciar Sesión</h2>
-            
-            <form id="auth-form" class="auth-form">
-                <div id="group-name" class="auth-form__group hidden">
-                    <label for="auth-name">Nombre</label>
-                    <input type="text" id="auth-name" placeholder="Tu nombre completo">
-                </div>
-                <div class="auth-form__group">
-                    <label for="auth-email">Email</label>
-                    <input type="email" id="auth-email" required placeholder="ejemplo@correo.com">
-                </div>
-                <div class="auth-form__group">
-                    <label for="auth-password">Contraseña</label>
-                    <input type="password" id="auth-password" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn--primary" style="width: 100%; margin-top: 1rem;">Confirmar</button>
-            </form>
-            
-            <p class="modal__switch" id="btn-switch-auth">¿No tienes cuenta? Regístrate aquí</p>
-        </div>
+      <div class="modal__content">
+        <span class="modal__close" id="btn-close-modal">&times;</span>
+        <h2 id="modal-title" class="modal__title">Iniciar Sesión</h2>
+
+        <form id="auth-form" class="auth-form">
+          <div id="group-name" class="auth-form__group hidden">
+            <label for="auth-name">Nombre</label>
+            <input
+              type="text"
+              id="auth-name"
+              placeholder="Tu nombre completo"
+            />
+          </div>
+          <div class="auth-form__group">
+            <label for="auth-email">Email</label>
+            <input
+              type="email"
+              id="auth-email"
+              required
+              placeholder="ejemplo@correo.com"
+            />
+          </div>
+          <div class="auth-form__group">
+            <label for="auth-password">Contraseña</label>
+            <input
+              type="password"
+              id="auth-password"
+              required
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn--primary"
+            style="width: 100%; margin-top: 1rem"
+          >
+            Confirmar
+          </button>
+        </form>
+
+        <p class="modal__switch" id="btn-switch-auth">
+          ¿No tienes cuenta? Regístrate aquí
+        </p>
+      </div>
     </div>
 
     <main class="main-content">
+      <section id="view-home" class="view-section section-home">
+        <div class="hero">
+          <h2 class="hero__title">Fragancias que definen tu esencia</h2>
+          <p class="hero__subtitle">
+            Explora nuestra colección exclusiva de autor creada con ingredientes
+            nobles.
+          </p>
+          <button class="btn btn--primary" onclick="app.showView('catalog')">
+            Ver Catálogo
+          </button>
+        </div>
+      </section>
 
-        <section id="view-home" class="view-section section-home">
-            <div class="hero">
-                <h2 class="hero__title">Fragancias que definen tu esencia</h2>
-                <p class="hero__subtitle">Explora nuestra colección exclusiva de autor creada con ingredientes nobles.</p>
-                <button class="btn btn--primary" onclick="app.showView('catalog')">Ver Catálogo</button>
+      <section id="view-catalog" class="view-section section-catalog hidden">
+        <div class="store-layout">
+          <div class="products-container">
+            <h2 class="section-title">Nuestra Colección</h2>
+            <div id="product-container" class="products-grid"></div>
+          </div>
+
+          <aside class="cart-sidebar">
+            <h2 class="cart-sidebar__title">Tu Carrito</h2>
+            <div id="cart-container" class="cart-sidebar__items"></div>
+            <div class="cart-sidebar__summary">
+              <h3>Total: <span id="cart-total">$0</span></h3>
+              <button id="btn-empty-cart" class="btn btn--danger">
+                Vaciar Carrito
+              </button>
+              <button
+                class="btn btn--primary"
+                style="margin-top: 1rem; width: 100%"
+              >
+                Finalizar Compra
+              </button>
             </div>
-        </section>
+          </aside>
+        </div>
+      </section>
 
-        <section id="view-catalog" class="view-section section-catalog hidden">
-            <div class="store-layout">
-                <div class="products-container">
-                    <h2 class="section-title">Nuestra Colección</h2>
-                    <div id="product-container" class="products-grid">
-                        </div>
-                </div>
-
-                <aside class="cart-sidebar">
-                    <h2 class="cart-sidebar__title">Tu Carrito</h2>
-                    <div id="cart-container" class="cart-sidebar__items">
-                        </div>
-                    <div class="cart-sidebar__summary">
-                        <h3>Total: <span id="cart-total">$0</span></h3>
-                        <button id="btn-empty-cart" class="btn btn--danger">Vaciar Carrito</button>
-                        <button class="btn btn--primary" style="margin-top: 1rem; width: 100%;">Finalizar Compra</button>
-                    </div>
-                </aside>
+      <section id="view-about" class="view-section section-about hidden">
+        <div class="about-content">
+          <h2 class="section-title">Nuestra Historia</h2>
+          <p>
+            En Fresh Essence, creemos que un perfume no es solo un aroma, sino
+            una extensión de la personalidad. Fundada en Medellín, nuestra
+            boutique se especializa en la curaduría de lociones de alta gama y
+            perfumería de nicho.
+          </p>
+          <div class="about-features">
+            <div class="feature">
+              <h3>Calidad Premium</h3>
+              <p>
+                Solo trabajamos con esencias extraídas de forma ética y
+                sostenible.
+              </p>
             </div>
-        </section>
-
-        <section id="view-about" class="view-section section-about hidden">
-            <div class="about-content">
-                <h2 class="section-title">Nuestra Historia</h2>
-                <p>En Fresh Essence, creemos que un perfume no es solo un aroma, sino una extensión de la personalidad. Fundada en Medellín, nuestra boutique se especializa en la curaduría de lociones de alta gama y perfumería de nicho.</p>
-                <div class="about-features">
-                    <div class="feature">
-                        <h3>Calidad Premium</h3>
-                        <p>Solo trabajamos con esencias extraídas de forma ética y sostenible.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>Asesoría Única</h3>
-                        <p>Expertos listos para ayudarte a encontrar tu firma olfativa.</p>
-                    </div>
-                </div>
+            <div class="feature">
+              <h3>Asesoría Única</h3>
+              <p>
+                Expertos listos para ayudarte a encontrar tu firma olfativa.
+              </p>
             </div>
-        </section>
-
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
-        <div class="footer__content">
-            <div class="footer__brand">
-                <h3>Fresh Essence</h3>
-                <p>Eleva tus sentidos.</p>
-            </div>
-            <div class="footer__contact">
-                <p>📍 Medellín, Antioquia</p>
-                <p>📧 contacto@freshessence.com</p>
-            </div>
+      <div class="footer__content">
+        <div class="footer__brand">
+          <h3>Fresh Essence</h3>
+          <p>Eleva tus sentidos.</p>
         </div>
-        <div class="footer__bottom">
-            <p>&copy; 2026 Fresh Essence - Proyecto Hackathon. Creado por Juan Pablo Castillo.</p>
+        <div class="footer__contact">
+          <p>📍 Medellín, Antioquia</p>
+          <p>📧 contacto@freshessence.com</p>
         </div>
+      </div>
+      <div class="footer__bottom">
+        <p>
+          &copy; 2026 Fresh Essence - Proyecto Hackathon. Creado por Juan Pablo
+          Castillo.
+        </p>
+      </div>
     </footer>
-
     <script src="js/data/seed.js"></script>
     <script src="js/models/Storage.js"></script>
-    <script src="js/models/User.js"></script> 
+    <script src="js/models/User.js"></script>
+    <script src="js/models/Store.js"></script>
     <script src="js/models/Cart.js"></script>
     <script src="js/app.js"></script>
-
-</body>
+  </body>
 </html>

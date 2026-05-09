@@ -1,85 +1,83 @@
 class Cart {
     constructor() {
-        // Inicializamos el carrito buscando en localStorage, si no hay nada, usamos un array vacío
-        this.items = JSON.parse(localStorage.getItem('cartItems')) || [];
+        this.items = JSON.parse(localStorage.getItem('cart')) || [];
     }
 
-    // Cumple con: agregarProducto(producto, cantidad)
+    // Aseguramos que sume la cantidad correcta
     addProduct(product, quantity = 1) {
         const existingItem = this.items.find(item => item.product.id === product.id);
         
         if (existingItem) {
-            // Si el producto ya está en el carrito, solo sumamos la cantidad
             existingItem.quantity += quantity;
         } else {
-            // Si es nuevo, lo pusheamos al array
             this.items.push({ product, quantity });
         }
         
-        this.saveCart();
+        this.save();
         this.render();
     }
 
-    // Cumple con: eliminarProducto(id)
-    removeProduct(id) {
-        this.items = this.items.filter(item => item.product.id !== id);
-        this.saveCart();
+    // NUEVO: Método con la validación exigida
+    removeQuantity(productId, quantityToRemove) {
+        const item = this.items.find(i => i.product.id === productId);
+        if (!item) return;
+
+        // Validación: No puede eliminar más de lo que tiene
+        if (quantityToRemove > item.quantity) {
+            alert(`¡Cuidado! Estás intentando eliminar ${quantityToRemove} unidades, pero solo tienes ${item.quantity} en tu carrito.`);
+            return;
+        }
+
+        if (quantityToRemove === item.quantity) {
+            // Si elimina todo, filtramos el producto fuera del arreglo
+            this.items = this.items.filter(i => i.product.id !== productId);
+        } else {
+            // Si elimina una parte, solo restamos
+            item.quantity -= quantityToRemove;
+        }
+
+        this.save();
         this.render();
     }
 
-    // Cumple con: calcularTotal()
-    calculateTotal() {
-        return this.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    emptyCart() { 
+        this.items = []; 
+        this.save(); 
+        this.render(); 
+    }
+    
+    save() { 
+        localStorage.setItem('cart', JSON.stringify(this.items)); 
     }
 
-    // Cumple con: vaciarCarrito()
-    emptyCart() {
-        this.items = [];
-        this.saveCart();
-        this.render();
-    }
-
-    // Método auxiliar para persistir el carrito en localStorage (KISS)
-    saveCart() {
-        localStorage.setItem('cartItems', JSON.stringify(this.items));
-    }
-
-    // Cumple con: renderizar() (muestra los productos del carrito en el DOM)
     render() {
-        // Selección del DOM requerida
-        const cartContainer = document.getElementById('cart-container');
-        const totalContainer = document.getElementById('cart-total');
-        
-        // Evitamos errores si el DOM aún no ha cargado completamente
-        if (!cartContainer || !totalContainer) return; 
+        const container = document.getElementById('cart-container');
+        if (!container) return;
 
-        // Limpiamos el contenedor antes de renderizar para evitar duplicados
-        cartContainer.innerHTML = ''; 
-
-        // Creación de elementos dinámicos
-        this.items.forEach(item => {
-            const cartElement = document.createElement('div');
-            cartElement.className = 'cart__item'; // Clase preparada para CSS BEM
-            
-            cartElement.innerHTML = `
-                <div class="cart__item-details">
-                    <span class="cart__item-icon">${item.product.image}</span>
-                    <span class="cart__item-name">${item.product.name}</span>
-                    <span class="cart__item-price">$${item.product.price.toLocaleString()}</span>
+        container.innerHTML = this.items.map(item => `
+            <div class="cart-item" style="display: flex; flex-direction: column; padding-bottom: 1rem; border-bottom: 1px solid #eee; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <strong>${item.product.name}</strong>
+                    <span>$${(item.product.price * item.quantity).toLocaleString()}</span>
                 </div>
-                <div class="cart__item-actions">
-                    <span class="cart__item-quantity">Cant: ${item.quantity}</span>
-                    <button class="cart__btn-remove" onclick="cart.removeProduct(${item.product.id})">❌ Eliminar</button>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 0.85rem; color: #666;">Cant actual: ${item.quantity}</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="number" id="remove-qty-${item.product.id}" value="1" min="1" max="${item.quantity}" style="width: 50px; padding: 0.2rem; text-align: center;">
+                        <button onclick="removeFromCart(${item.product.id})" style="color: #d9534f; cursor: pointer; border: none; background: transparent; font-size: 0.85rem; font-weight: bold;">Eliminar</button>
+                    </div>
                 </div>
-            `;
-            
-            cartContainer.appendChild(cartElement);
-        });
+            </div>
+        `).join('');
 
-        // Actualizamos el total en el DOM
-        totalContainer.textContent = `$${this.calculateTotal().toLocaleString()}`;
+        const total = this.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+        const totalElement = document.getElementById('cart-total');
+        if (totalElement) {
+            totalElement.innerText = `$${total.toLocaleString()}`;
+        }
     }
 }
 
-// Instanciamos el carrito para que esté disponible globalmente
+// Instanciamos el carrito para que sea global
 const cart = new Cart();

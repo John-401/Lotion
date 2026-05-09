@@ -2,15 +2,12 @@
 const app = {
     // Función para cambiar entre vistas (Inicio, Catálogo, Nosotros)
     showView: function(viewId) {
-        // Seleccionamos todas las secciones principales
         const sections = document.querySelectorAll('.view-section');
         
-        // Ocultamos todas añadiendo la clase 'hidden'
         sections.forEach(section => {
             section.classList.add('hidden');
         });
 
-        // Mostramos únicamente la sección solicitada
         const targetSection = document.getElementById(`view-${viewId}`);
         if (targetSection) {
             targetSection.classList.remove('hidden');
@@ -19,13 +16,15 @@ const app = {
 
     // Función que arranca toda la lógica al cargar la página
     init: function() {
-        renderCatalog();
+        Store.renderCatalog();
         checkAuthState();
         setupModalEvents();
 
         // Validar que el carrito exista antes de renderizar
         if (typeof cart !== 'undefined') {
             cart.render();
+        } else {
+            console.warn("Advertencia: El objeto 'cart' no está definido globalmente.");
         }
 
         // Evento para el botón de vaciar carrito
@@ -45,53 +44,67 @@ document.addEventListener('DOMContentLoaded', () => {
     app.init();
 });
 
-// --- FUNCIÓN PARA RENDERIZAR EL CATÁLOGO (DOM Dinámico) ---
-function renderCatalog() {
-    const productContainer = document.getElementById('product-container');
-    if (!productContainer) return; // Salir si no estamos en la vista que tiene el contenedor
 
-    // Traemos los productos usando la clase estática (POO)
-    const products = Storage.getProducts();
-
-    // Limpiamos el contenedor antes de inyectar
-    productContainer.innerHTML = '';
-
-    // Inyectamos el HTML de cada tarjeta
-    products.forEach(product => {
-        const productCard = document.createElement('article');
-        productCard.className = 'product-card';
-
-        productCard.innerHTML = `
-            <div class="product-card__image">${product.image}</div>
-            <div class="product-card__info">
-                <h3 class="product-card__name">${product.name}</h3>
-                <p class="product-card__category">${product.category}</p>
-                <p class="product-card__price">$${product.price.toLocaleString()}</p>
-                <p class="product-card__stock">Stock: ${product.stock}</p>
-            </div>
-            <button class="btn btn--primary" onclick="addToCart(${product.id})">
-                Agregar al carrito
-            </button>
-        `;
-
-        productContainer.appendChild(productCard);
-    });
-}
-
-// --- FUNCIÓN PARA AGREGAR AL CARRITO ---
-// Se asigna al objeto global 'window' para que el HTML pueda ejecutarla en el onclick
+// --- FUNCIÓN ACTUALIZADA Y SEGURA PARA AGREGAR AL CARRITO ---
 window.addToCart = function(productId) {
+    // 1. Validar Sesión
     if (!User.getCurrentUser()) {
         alert('Por favor, inicia sesión para agregar productos al carrito.');
-        document.getElementById('btn-show-login').click(); // Abrir modal automáticamente
+        const btnLogin = document.getElementById('btn-show-login');
+        if (btnLogin) btnLogin.click(); 
         return;
     }
 
+    // 2. Obtener el producto de la base de datos simulada
     const product = Storage.getProductById(productId);
-    if (product && product.stock > 0) {
-        cart.addProduct(product, 1);
-    } else {
-        alert('Lo sentimos, este producto está agotado.');
+    if (!product) return;
+
+    // 3. Captura SEGURA del input de cantidad
+    const quantityInput = document.getElementById(`qty-${productId}`);
+    let quantity = 1; // Cantidad por defecto
+    
+    // Si el input existe en el DOM, tomamos su valor
+    if (quantityInput) {
+        quantity = parseInt(quantityInput.value) || 1;
+    }
+
+    // 4. Validaciones de inventario
+    if (quantity <= 0) {
+        alert('Debes seleccionar al menos 1 unidad para agregar.');
+        return;
+    }
+    
+    if (quantity > product.stock) {
+        alert(`Solo tenemos ${product.stock} unidades en stock de ${product.name}.`);
+        return;
+    }
+    
+    // 5. Agregar al carrito y resetear el input
+    if (typeof cart !== 'undefined') {
+        cart.addProduct(product, quantity);
+        if (quantityInput) {
+            quantityInput.value = 1; // Regresar el input a 1
+        }
+    }
+};
+
+// --- FUNCIÓN SEGURA PARA ELIMINAR CANTIDADES DEL CARRITO ---
+window.removeFromCart = function(productId) {
+    // Captura SEGURA del input de eliminar
+    const removeInput = document.getElementById(`remove-qty-${productId}`);
+    let qtyToRemove = 1;
+    
+    if (removeInput) {
+        qtyToRemove = parseInt(removeInput.value) || 1;
+    }
+    
+    if (qtyToRemove <= 0) {
+        alert('Ingresa una cantidad válida para eliminar.');
+        return;
+    }
+    
+    if (typeof cart !== 'undefined') {
+        cart.removeQuantity(productId, qtyToRemove);
     }
 };
 
@@ -103,12 +116,10 @@ function checkAuthState() {
     const userGreeting = document.getElementById('user-greeting');
 
     if (currentUser) {
-        // Usuario logueado: Ocultar botón "Iniciar Sesión", mostrar "Salir" y saludo
         if(btnShowLogin) btnShowLogin.classList.add('hidden');
         if(btnLogout) btnLogout.classList.remove('hidden');
         if(userGreeting) userGreeting.textContent = `Hola, ${currentUser.name}`;
     } else {
-        // Sin sesión activa
         if(btnShowLogin) btnShowLogin.classList.remove('hidden');
         if(btnLogout) btnLogout.classList.add('hidden');
         if(userGreeting) userGreeting.textContent = '';
@@ -124,7 +135,7 @@ function setupModalEvents() {
     const authForm = document.getElementById('auth-form');
     const btnLogout = document.getElementById('btn-logout');
 
-    let isLoginMode = true; // Controla si estamos en modo Login o Registro
+    let isLoginMode = true; 
 
     // Abrir/Cerrar Modal
     if(btnShowLogin) btnShowLogin.addEventListener('click', () => modal.classList.remove('hidden'));
@@ -148,17 +159,15 @@ function setupModalEvents() {
             const password = document.getElementById('auth-password').value;
 
             if (isLoginMode) {
-                // Flujo de Login
                 if(User.login(email, password)) {
                     modal.classList.add('hidden');
                     checkAuthState();
                     authForm.reset();
                 }
             } else {
-                // Flujo de Registro
                 const name = document.getElementById('auth-name').value;
                 if(User.register(name, email, password)) {
-                    btnSwitchAuth.click(); // Cambia a la vista de login automáticamente
+                    btnSwitchAuth.click(); 
                     authForm.reset();
                 }
             }
@@ -170,8 +179,8 @@ function setupModalEvents() {
         btnLogout.addEventListener('click', () => {
             User.logout();
             checkAuthState();
-            if (typeof cart !== 'undefined') cart.emptyCart(); // Vaciar carrito por seguridad
-            app.showView('home'); // Redirigir a inicio
+            if (typeof cart !== 'undefined') cart.emptyCart(); 
+            app.showView('home'); 
         });
     }
 }
