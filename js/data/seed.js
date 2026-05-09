@@ -3,7 +3,7 @@ const initialLotions = [
         id: 1, 
         name: "Ocean Breeze", 
         price: 120000, 
-        image: "🌊", 
+        image: "img/Perfume1.png", 
         category: "Fresh",
         stock: 10 
     },
@@ -11,7 +11,7 @@ const initialLotions = [
         id: 2, 
         name: "Midnight Wood", 
         price: 185000, 
-        image: "🌲", 
+        image: "img/perfume_2.png", 
         category: "Woody",
         stock: 5 
     },
@@ -19,7 +19,7 @@ const initialLotions = [
         id: 3, 
         name: "Citrus Spark", 
         price: 95000, 
-        image: "🍋", 
+        image: "img/perfume_3.png", 
         category: "Citrus",
         stock: 20 
     },
@@ -27,7 +27,7 @@ const initialLotions = [
         id: 4, 
         name: "Velvet Rose", 
         price: 210000, 
-        image: "🌹", 
+        image: "img/perfume_4.webp", 
         category: "Floral",
         stock: 3 
     }
